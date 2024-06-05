@@ -8,7 +8,9 @@ pip install -e .
 
 import MiniOCR
 
-model = MiniOCR.Model()
+model = MiniOCR.Model() 
+# model = MiniOCR.Model(characters=["A","0","1","2"]) --> if you dont want to use all characters(speed up the prediction)
+# model = MiniOCR.Model(devide="cuda") --> if you want to use gpu (speed up the prediction)
 model.predict('path/to/image.jpg')
 ```
 output:
@@ -22,3 +24,5 @@ output:
  ...
 ]
 ```
+
+
