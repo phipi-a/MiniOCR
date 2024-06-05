@@ -10,10 +10,11 @@ class Model:
         self.imgs, self.chars = char_gen.get_all_char_images(characters)
         if device == "cuda":
             self.imgs = self.imgs.cuda()
-        self.model = template_matching.TemplateMatchingModel(self.imgs)
+        self.model = template_matching.TemplateMatchingModel(self.imgs).to(device)
+        self.device = device
 
     def preprocessing(self, img):
-        img = torch.any(img, dim=-1).float()
+        img = torch.any(img, dim=-1).float().to(self.device)
         return img
 
     def predict(self, img_path):
