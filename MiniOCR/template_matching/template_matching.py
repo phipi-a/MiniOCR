@@ -1,6 +1,28 @@
 import torch
 
 
+class TemplateMatchingModel(torch.nn.Module):
+    def __init__(self, templates):
+        super(TemplateMatchingModel, self).__init__()
+        self.templates = templates
+        # templates_size: (num_templates, height, width)
+        self.conv = torch.nn.Conv2d(
+            in_channels=1, out_channels=1, kernel_size=templates[0].size(), bias=False
+        )
+        templates = templates.unsqueeze(1)
+        templates[templates == 0] = -1
+        self.conv.weight = torch.nn.Parameter(templates)
+
+    def forward(self, img_tensor):
+        img_tensor = img_tensor.unsqueeze(1)
+        img_tensor[img_tensor == 0] = -1
+        result1 = self.conv(img_tensor)
+        # -1 not equal and 1 match
+        max_value = self.templates.size(1) * self.templates.size(2)
+        result1 = (result1 + max_value) / (max_value * 2)
+        return result1.squeeze(1)
+
+
 def matchTemplateTorch(img_tensor, template_tensor):
     img_tensor = img_tensor.clone()
     template_tensor = template_tensor.clone()
