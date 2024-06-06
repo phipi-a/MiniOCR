@@ -13,8 +13,11 @@ class Model:
         self.model = template_matching.TemplateMatchingModel(self.imgs).to(device)
         self.device = device
 
-    def preprocessing(self, img):
-        if len(img.shape) == 3:
+    def preprocessing(self, img, batch=False):
+        color_dim_available = not (
+            (len(img.shape) == 3 and batch) or (len(img.shape) == 2 and not batch)
+        )
+        if color_dim_available:
             img = torch.any(img, dim=-1)
         img = img.float().to(self.device)
         img[img > 0] = 1
@@ -30,7 +33,7 @@ class Model:
         return template_matching.get_top_char_pairs(res, self.chars)
 
     def predict_batch(self, img_batch):
-        img_batch = self.preprocessing(img_batch)
+        img_batch = self.preprocessing(img_batch, batch=True)
         res = self.model(img_batch)
         out = []
         for r in res:
