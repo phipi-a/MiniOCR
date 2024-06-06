@@ -46,6 +46,12 @@ def get_top_char_pairs(res, chars):
         all_results.append(
             {"char": c, "score": r[y, x].item(), "y": y.item(), "x": x.item()}
         )
+        r = r.clone()
+        r[y : y + 172, x : x + 90] = 0
+        y2, x2 = torch.unravel_index(r.argmax(), r.shape)
+        all_results.append(
+            {"char": c, "score": r[y2, x2].item(), "y": y2.item(), "x": x2.item()}
+        )
     all_results.sort(key=lambda x: x["score"], reverse=True)
 
     grouped = {}
