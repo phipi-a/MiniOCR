@@ -14,7 +14,11 @@ class Model:
         self.device = device
 
     def preprocessing(self, img):
-        img = torch.any(img, dim=-1).float().to(self.device)
+        if len(img.shape) == 3:
+            img = torch.any(img, dim=-1)
+        img = img.float().to(self.device)
+        img[img > 0] = 1
+
         return img
 
     def predict(self, img_path):
@@ -22,7 +26,6 @@ class Model:
         img = np.array(img)
         img = torch.tensor(img)
         img = self.preprocessing(img).unsqueeze(0)
-
         res = self.model(img)[0]
         return template_matching.get_top_char_pairs(res, self.chars)
 
